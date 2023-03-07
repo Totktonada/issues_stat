@@ -40,6 +40,7 @@ params = {
 url = 'https://api.github.com/repos/{}/{}/issues'.format(owner, repo)
 status(0, '??', 0, url)
 r = session.get(url, headers=headers, params=params)
+r.raise_for_status()
 
 data = []
 data.extend(r.json())
@@ -60,6 +61,7 @@ if r.links:
         next_url = r.links['next']['url']
         status(pages, pages_all_str, len(data), next_url)
         r = session.get(next_url, headers=headers)
+        r.raise_for_status()
         data.extend(r.json())
         pages += 1
 
