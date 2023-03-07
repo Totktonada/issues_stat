@@ -44,19 +44,24 @@ r = session.get(url, headers=headers, params=params)
 data = []
 data.extend(r.json())
 
-pages_all_str = '??'
-last_url = r.links['last']['url']
-pages_all_match = re.search(r'page=(\d+)', last_url)
-if pages_all_match:
-    pages_all_str = pages_all_match.group(1)
+# > The link header will be omitted if the endpoint does not support pagination
+# > or *if all results fit on a single page.*
+#
+# https://docs.github.com/en/rest/guides/using-pagination-in-the-rest-api?apiVersion=2022-11-28
+if r.links:
+    pages_all_str = '??'
+    last_url = r.links['last']['url']
+    pages_all_match = re.search(r'page=(\d+)', last_url)
+    if pages_all_match:
+        pages_all_str = pages_all_match.group(1)
 
-pages = 1
-while 'next' in r.links:
-    next_url = r.links['next']['url']
-    status(pages, pages_all_str, len(data), next_url)
-    r = session.get(next_url, headers=headers)
-    data.extend(r.json())
-    pages += 1
+    pages = 1
+    while 'next' in r.links:
+        next_url = r.links['next']['url']
+        status(pages, pages_all_str, len(data), next_url)
+        r = session.get(next_url, headers=headers)
+        data.extend(r.json())
+        pages += 1
 
 label_stat = {}
 max_label_len = 0
