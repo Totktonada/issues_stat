@@ -36,6 +36,7 @@ headers = {
 }
 params = {
     'state': 'open',
+    'per_page': 100,
 }
 url = 'https://api.github.com/repos/{}/{}/issues'.format(owner, repo)
 status(0, '??', 0, url)
@@ -52,7 +53,7 @@ data.extend(r.json())
 if r.links:
     pages_all_str = '??'
     last_url = r.links['last']['url']
-    pages_all_match = re.search(r'page=(\d+)', last_url)
+    pages_all_match = re.search(r'[^_]page=(\d+)', last_url)
     if pages_all_match:
         pages_all_str = pages_all_match.group(1)
 
